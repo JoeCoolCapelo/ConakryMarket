@@ -50,27 +50,27 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-3 group">
+            <Link to="/" className="flex items-center gap-2 group">
               <motion.div 
-                whileHover={{ rotate: 10, scale: 1.1 }}
-                className="bg-gradient-to-br from-primary to-orange-500 p-2.5 rounded-xl text-white shadow-lg shadow-primary/30"
+                whileHover={{ rotate: 5, scale: 1.05 }}
+                className="w-10 h-10 rounded-xl overflow-hidden shadow-md border border-gray-100"
               >
-                <FiShoppingBag size={22} />
+                <img src="/logo.jpg" alt="ConakryMarket Logo" className="w-full h-full object-cover" />
               </motion.div>
-              <span className="font-black text-2xl tracking-tight text-gray-900 hidden sm:block group-hover:text-primary transition-colors">
-                ConakryMarket
+              <span className="font-black text-xl tracking-tight text-gray-900 hidden sm:block group-hover:text-primary transition-colors">
+                Conakry<span className="text-primary">Market</span>
               </span>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-600 hover:text-primary transition-colors font-bold text-sm tracking-wide uppercase">Accueil</Link>
-            <Link to="/catalogue" className="text-gray-600 hover:text-primary transition-colors font-bold text-sm tracking-wide uppercase">Catalogue</Link>
+          <div className="hidden md:flex items-center space-x-6">
+            <Link to="/" className="text-gray-600 hover:text-primary transition-colors font-bold text-xs tracking-wide uppercase">Accueil</Link>
+            <Link to="/catalogue" className="text-gray-600 hover:text-primary transition-colors font-bold text-xs tracking-wide uppercase">Catalogue</Link>
             <div className="relative"
               onMouseEnter={() => setIsCatDropdownOpen(true)}
               onMouseLeave={() => setIsCatDropdownOpen(false)}
             >
-              <button className="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors font-bold text-sm tracking-wide uppercase">
+              <button className="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors font-bold text-xs tracking-wide uppercase">
                 Catégories <FiChevronDown size={14} className={`transition-transform ${isCatDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               <AnimatePresence>
@@ -125,7 +125,7 @@ const Navbar = () => {
                   onMouseEnter={() => setIsOrdersDropdownOpen(true)}
                   onMouseLeave={() => setIsOrdersDropdownOpen(false)}
                 >
-                  <button className="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors font-bold text-sm tracking-wide uppercase">
+                  <button className="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors font-bold text-xs tracking-wide uppercase">
                     Commandes <FiChevronDown size={14} className={`transition-transform ${isOrdersDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
@@ -151,7 +151,7 @@ const Navbar = () => {
                     onMouseEnter={() => setIsVendorDropdownOpen(true)}
                     onMouseLeave={() => setIsVendorDropdownOpen(false)}
                   >
-                    <button className="flex items-center gap-1 text-secondary hover:text-green-600 transition-colors font-bold text-sm tracking-wide uppercase">
+                    <button className="flex items-center gap-1 text-secondary hover:text-green-600 transition-colors font-bold text-xs tracking-wide uppercase">
                       Espace Vendeur <FiChevronDown size={14} className={`transition-transform ${isVendorDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
                     <AnimatePresence>
@@ -184,7 +184,7 @@ const Navbar = () => {
                     onMouseEnter={() => setIsAdminDropdownOpen(true)}
                     onMouseLeave={() => setIsAdminDropdownOpen(false)}
                   >
-                    <button className="flex items-center gap-1 text-purple-600 hover:text-purple-700 transition-colors font-bold text-sm tracking-wide uppercase">
+                    <button className="flex items-center gap-1 text-purple-600 hover:text-purple-700 transition-colors font-bold text-xs tracking-wide uppercase">
                       Admin <FiChevronDown size={14} className={`transition-transform ${isAdminDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
                     <AnimatePresence>
@@ -251,12 +251,12 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link to="/connexion" className="text-gray-900 font-bold hover:text-primary px-4 py-2 transition-colors">Connexion</Link>
+                <Link to="/connexion" className="text-gray-900 font-bold text-sm hover:text-primary px-3 py-1.5 transition-colors">Connexion</Link>
                 <Link to="/inscription">
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-full font-bold transition-colors shadow-md"
+                    className="bg-gray-900 hover:bg-black text-white px-5 py-2 rounded-full font-bold text-sm transition-colors shadow-md"
                   >
                     Inscription
                   </motion.button>

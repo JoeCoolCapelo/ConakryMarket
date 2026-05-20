@@ -10,11 +10,11 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="bg-primary p-2 rounded-lg text-white">
-                <FiShoppingBag size={24} />
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm border border-gray-100">
+                <img src="/logo.jpg" alt="ConakryMarket Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-bold text-xl text-accent-dark">
-                ConakryMarket
+                Conakry<span className="text-primary">Market</span>
               </span>
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">
