@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi';
+import { FiMail, FiLock, FiArrowRight, FiLogIn, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -76,63 +77,73 @@ const Login = () => {
           Retour à l'accueil
         </Link>
         
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-left">
-            <h2 className="text-4xl font-black text-gray-900">Bon retour ! 👋</h2>
-            <p className="mt-3 text-gray-500 font-medium">Connectez-vous pour accéder à votre espace personnel.</p>
+        <div className="max-w-md w-full py-8">
+          {/* En-tête */}
+          <div className="flex items-center gap-4 mb-10">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <FiLogIn className="text-primary" size={28} />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-gray-900">Bon retour !</h2>
+              <p className="text-gray-500 font-medium text-sm mt-0.5">Connectez-vous à votre espace personnel.</p>
+            </div>
           </div>
-          
-          <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-gray-900 mb-2">Adresse Email</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <FiMail className="text-gray-400" size={18} />
-                  </div>
-                  <input
-                    type="email"
-                    required
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-gray-900 font-medium"
-                    placeholder="votre@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* Email */}
+            <div>
+              <label className="block text-xs font-black text-gray-700 mb-2 uppercase tracking-widest">Adresse Email</label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FiMail className="text-gray-400 group-focus-within:text-primary transition-colors" size={17} />
                 </div>
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-bold text-gray-900">Mot de passe</label>
-                  <a href="#" className="text-xs font-bold text-primary hover:text-primary-dark transition-colors">Mot de passe oublié ?</a>
-                </div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <FiLock className="text-gray-400" size={18} />
-                  </div>
-                  <input
-                    type="password"
-                    required
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-gray-900 font-medium"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
+                <input
+                  type="email" required
+                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-gray-900 font-semibold text-sm placeholder:font-normal placeholder:text-gray-400"
+                  placeholder="votre@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-4 px-4 rounded-xl shadow-lg shadow-primary/30 text-lg font-black text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5 mt-8"
-            >
-              {loading ? (
-                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                <>Se connecter <FiArrowRight size={20} /></>
-              )}
-            </button>
+            {/* Mot de passe */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-black text-gray-700 uppercase tracking-widest">Mot de passe</label>
+                <a href="#" className="text-xs font-bold text-primary hover:underline transition-colors">Oublié ?</a>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FiLock className="text-gray-400 group-focus-within:text-primary transition-colors" size={17} />
+                </div>
+                <input
+                  type={showPassword ? 'text' : 'password'} required
+                  className="w-full pl-11 pr-12 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-gray-900 font-semibold text-sm placeholder:font-normal placeholder:text-gray-400"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-primary transition-colors">
+                  {showPassword ? <FiEyeOff size={17}/> : <FiEye size={17}/>}
+                </button>
+              </div>
+            </div>
+
+            {/* Bouton */}
+            <div className="pt-2">
+              <button
+                type="submit" disabled={loading}
+                className="w-full flex justify-center items-center gap-2.5 py-4 px-4 rounded-2xl shadow-lg shadow-primary/30 text-base font-black text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <><FiLogIn size={18} /> Se connecter</>
+                )}
+              </button>
+            </div>
           </form>
           
           <div className="text-center mt-10">

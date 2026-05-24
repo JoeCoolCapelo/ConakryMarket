@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { FiUser, FiMail, FiPhone, FiLock, FiMapPin, FiCalendar, FiArrowRight, FiShoppingCart, FiBriefcase, FiCheckCircle } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiLock, FiMapPin, FiCalendar, FiArrowRight, FiShoppingCart, FiBriefcase, FiCheckCircle, FiUserPlus, FiEye, FiEyeOff } from 'react-icons/fi';
 
 const VILLES = ['Conakry', 'Kindia', 'Labé', 'Kankan', 'Mamou', 'Nzérékoré', 'Boké', 'Faranah'];
 
@@ -15,6 +15,7 @@ const Register = () => {
     age: '',
     role: 'client'
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -108,8 +109,15 @@ const Register = () => {
 
         <div className="max-w-lg w-full py-8">
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-gray-900">Créez votre compte 🚀</h2>
-            <p className="mt-2 text-gray-500 font-medium">Rejoignez ConakryMarket et commencez à acheter ou vendre en Guinée.</p>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                <FiUserPlus className="text-primary" size={26} />
+              </div>
+              <div>
+                <h2 className="text-3xl font-black text-gray-900">Créez votre compte</h2>
+                <p className="text-gray-500 font-medium text-sm mt-0.5">Rejoignez ConakryMarket, la marketplace n°1 de Guinée.</p>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -157,57 +165,61 @@ const Register = () => {
 
             {/* Champs en grille */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField label="Nom complet" icon={<FiUser size={16} className="text-gray-400" />}>
+              <FormField label="Nom complet" icon={<FiUser size={16} className="text-gray-400 group-focus-within:text-primary transition-colors" />}>
                 <input
                   type="text" name="nom" required
                   value={formData.nom} onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold placeholder:font-normal placeholder:text-gray-400"
                   placeholder="Mamadou Diallo"
                 />
               </FormField>
 
-              <FormField label="Email" icon={<FiMail size={16} className="text-gray-400" />}>
+              <FormField label="Email" icon={<FiMail size={16} className="text-gray-400 group-focus-within:text-primary transition-colors" />}>
                 <input
                   type="email" name="email" required
                   value={formData.email} onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold placeholder:font-normal placeholder:text-gray-400"
                   placeholder="mamadou@email.com"
                 />
               </FormField>
 
-              <FormField label="Téléphone" icon={<FiPhone size={16} className="text-gray-400" />}>
+              <FormField label="Téléphone" icon={<FiPhone size={16} className="text-gray-400 group-focus-within:text-primary transition-colors" />}>
                 <input
                   type="tel" name="telephone" required
                   value={formData.telephone} onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold placeholder:font-normal placeholder:text-gray-400"
                   placeholder="+224 620 00 00 00"
                 />
               </FormField>
 
-              <FormField label="Mot de passe" icon={<FiLock size={16} className="text-gray-400" />}>
+              <FormField label="Mot de passe" icon={<FiLock size={16} className="text-gray-400 group-focus-within:text-primary transition-colors" />}>
                 <input
-                  type="password" name="mot_de_passe" required minLength={6}
+                  type={showPassword ? 'text' : 'password'} name="mot_de_passe" required minLength={6}
                   value={formData.mot_de_passe} onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                  className="w-full pl-10 pr-12 py-3 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold placeholder:font-normal placeholder:text-gray-400"
                   placeholder="Min. 6 caractères"
                 />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-primary transition-colors">
+                  {showPassword ? <FiEyeOff size={16}/> : <FiEye size={16}/>}
+                </button>
               </FormField>
 
-              <FormField label="Ville" icon={<FiMapPin size={16} className="text-gray-400" />}>
+              <FormField label="Ville" icon={<FiMapPin size={16} className="text-gray-400 group-focus-within:text-primary transition-colors" />}>
                 <select
                   name="ville" required
                   value={formData.ville} onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none text-sm font-medium"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all appearance-none text-sm font-semibold cursor-pointer"
                 >
                   {VILLES.map(v => <option key={v} value={v}>{v}</option>)}
                 </select>
               </FormField>
 
-              <FormField label="Âge" icon={<FiCalendar size={16} className="text-gray-400" />}>
+              <FormField label="Âge" icon={<FiCalendar size={16} className="text-gray-400 group-focus-within:text-primary transition-colors" />}>
                 <input
                   type="number" name="age" required min={18} max={99}
                   value={formData.age} onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold placeholder:font-normal placeholder:text-gray-400"
                   placeholder="25"
                 />
               </FormField>
@@ -248,9 +260,9 @@ const Register = () => {
 /* Composant utilitaire pour les champs */
 const FormField = ({ label, icon, children }) => (
   <div>
-    <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">{label}</label>
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+    <label className="block text-xs font-black text-gray-700 mb-2 uppercase tracking-widest">{label}</label>
+    <div className="relative group">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
         {icon}
       </div>
       {children}
