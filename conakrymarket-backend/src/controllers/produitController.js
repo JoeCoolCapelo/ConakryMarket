@@ -1,4 +1,5 @@
 const Produit = require('../models/Produit');
+const Client = require('../models/Client');
 const { paginate } = require('../utils/pagination');
 
 exports.getAll = async (req, res, next) => {
@@ -25,8 +26,22 @@ exports.getAll = async (req, res, next) => {
 
 exports.getOne = async (req, res, next) => {
   try {
-    const produit = await Produit.findOne({ pid: req.params.pid, actif: true });
-    if (!produit) return res.status(404).json({ message: 'Produit non trouvé' });
+    const isObjectId = req.params.pid.match(/^[0-9a-fA-F]{24}$/);
+    const query = isObjectId ? { _id: req.params.pid, actif: true } : { pid: req.params.pid, actif: true };
+    const produitDoc = await Produit.findOne(query);
+    if (!produitDoc) return res.status(404).json({ message: 'Produit non trouvé' });
+    
+    // Convertir en objet pour pouvoir ajouter le vendeur
+    const produit = produitDoc.toObject();
+    
+    // Récupérer les infos du vendeur
+    if (produit.vendeur_uid) {
+      const vendeur = await Client.findOne({ uid: produit.vendeur_uid }).select('nom email telephone');
+      if (vendeur) {
+        produit.vendeur = vendeur;
+      }
+    }
+    
     res.json(produit);
   } catch (error) {
     next(error);

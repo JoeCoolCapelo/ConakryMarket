@@ -10,9 +10,7 @@ const FilterSidebar = ({ filters, setFilters, isOpen, setIsOpen }) => {
   const [isCityOpen, setIsCityOpen] = useState(true);
 
   const handleCategoryChange = (cat) => {
-    const updatedCats = filters.categorie?.includes(cat)
-      ? filters.categorie.filter(c => c !== cat)
-      : [...(filters.categorie || []), cat];
+    const updatedCats = filters.categorie?.includes(cat) ? [] : [cat];
     setFilters({ ...filters, categorie: updatedCats });
   };
 
@@ -90,10 +88,8 @@ const FilterSidebar = ({ filters, setFilters, isOpen, setIsOpen }) => {
                           checked={filters.categorie?.includes(cat) || false}
                           onChange={() => handleCategoryChange(cat)}
                         />
-                        <div className="w-5 h-5 border-2 border-gray-300 rounded group-hover:border-primary peer-checked:bg-primary peer-checked:border-primary transition-all"></div>
-                        <svg className="absolute w-3 h-3 text-white left-1 pointer-events-none opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
+                        <div className="w-5 h-5 border-2 border-gray-300 rounded-full group-hover:border-primary peer-checked:bg-primary peer-checked:border-primary transition-all"></div>
+                        <div className="absolute w-2 h-2 bg-white rounded-full left-[6px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                       </div>
                       <span className="text-gray-600 group-hover:text-gray-900 transition-colors">{cat}</span>
                     </label>

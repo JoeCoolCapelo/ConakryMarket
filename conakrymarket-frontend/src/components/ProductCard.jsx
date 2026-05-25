@@ -4,13 +4,23 @@ import { FiStar, FiMapPin, FiShoppingCart, FiPlus } from 'react-icons/fi';
 import { useCart } from '../hooks/useCart';
 import { formatPrice } from '../utils/formatPrice';
 import { motion } from 'framer-motion';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const ProductCard = ({ product }) => {
   const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.error('Veuillez vous connecter pour ajouter au panier');
+      navigate('/connexion');
+      return;
+    }
     addItem(product, 1);
   };
 

@@ -19,6 +19,11 @@ const Checkout = () => {
     quartier: '',
     details_adresse: '',
     methode_paiement: 'Espèces',
+    type_carte: 'Visa', // default card
+    numero_carte: '',
+    expiration: '',
+    cvv: '',
+    telephone_orange: '' // for Orange Money
   });
 
   // Si panier vide et pas de succès, on redirige
@@ -157,8 +162,8 @@ const Checkout = () => {
                 <FiCreditCard className="text-primary" /> Méthode de paiement
               </h2>
               
-              <div className="grid grid-cols-1 gap-4">
-                {['Espèces', 'Mobile Money', 'Carte'].map((method) => (
+              <div className="grid grid-cols-1 gap-4 mb-6">
+                {['Orange Money', 'Espèces', 'Carte'].map((method) => (
                   <label key={method} className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${formData.methode_paiement === method ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-gray-200 hover:bg-gray-50'}`}>
                     <input 
                       type="radio" 
@@ -172,6 +177,89 @@ const Checkout = () => {
                   </label>
                 ))}
               </div>
+
+              {formData.methode_paiement === 'Orange Money' && (
+                <div className="p-5 bg-orange-50 border border-orange-100 rounded-xl space-y-4 mb-4">
+                  <h3 className="font-bold text-orange-600">Paiement Orange Money</h3>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Numéro de téléphone Orange</label>
+                    <input 
+                      type="tel" 
+                      name="telephone_orange" 
+                      value={formData.telephone_orange} 
+                      onChange={handleChange}
+                      placeholder="Ex: 620 XX XX XX"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.methode_paiement === 'Carte' && (
+                <div className="p-5 bg-gray-50 border border-gray-200 rounded-xl space-y-6">
+                  <h3 className="font-bold text-accent-dark">Détails de la carte</h3>
+                  
+                  {/* Choix du type de carte */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {['Visa', 'MasterCard', 'PayCard'].map((carte) => (
+                      <label key={carte} className={`flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer transition-all ${formData.type_carte === carte ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-gray-200 bg-white hover:bg-gray-50 text-gray-600'}`}>
+                        <input 
+                          type="radio" 
+                          name="type_carte" 
+                          value={carte} 
+                          checked={formData.type_carte === carte}
+                          onChange={handleChange}
+                          className="hidden"
+                        />
+                        <span className="text-sm">{carte}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* Infos de la carte */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Numéro de carte</label>
+                      <input 
+                        type="text" 
+                        name="numero_carte" 
+                        value={formData.numero_carte} 
+                        onChange={handleChange}
+                        placeholder="XXXX XXXX XXXX XXXX"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
+                        required
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Expiration</label>
+                        <input 
+                          type="text" 
+                          name="expiration" 
+                          value={formData.expiration} 
+                          onChange={handleChange}
+                          placeholder="MM/AA"
+                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+                        <input 
+                          type="text" 
+                          name="cvv" 
+                          value={formData.cvv} 
+                          onChange={handleChange}
+                          placeholder="123"
+                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </form>
         </div>

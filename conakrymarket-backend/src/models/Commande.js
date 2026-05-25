@@ -20,7 +20,7 @@ const commandeSchema = new mongoose.Schema({
   montant_total: { type: Number, required: true },
   mode_paiement: { 
     type: String, 
-    enum: ['Mobile Money', 'Espèces', 'Carte'] 
+    enum: ['Orange Money', 'Espèces', 'Carte'] 
   },
   adresse_livraison: {
     ville: { type: String },

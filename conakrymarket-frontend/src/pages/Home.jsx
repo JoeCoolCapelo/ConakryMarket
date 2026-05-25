@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiSmartphone, FiShoppingBag, FiCoffee, FiSun, FiArrowRight, FiShield, FiTruck, FiCreditCard, FiUsers, FiPackage, FiCheckCircle, FiStore } from 'react-icons/fi';
+import { FiSmartphone, FiShoppingBag, FiCoffee, FiSun, FiArrowRight, FiShield, FiTruck, FiCreditCard, FiUsers, FiPackage, FiCheckCircle, FiBriefcase } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
 import { getProduits } from '../services/produits';
 import api from '../services/api';
@@ -355,7 +355,7 @@ const Home = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
           >
             <StatCard icon={<FiUsers size={28}/>} value={stats.totalUsers} label="Clients actifs" color="text-primary" started={statsVisible} />
-            <StatCard icon={<FiStore size={28}/>} value={stats.totalVendeurs} label="Vendeurs" color="text-secondary" started={statsVisible} />
+            <StatCard icon={<FiBriefcase size={28}/>} value={stats.totalVendeurs} label="Vendeurs" color="text-secondary" started={statsVisible} />
             <StatCard icon={<FiPackage size={28}/>} value={stats.totalProduits} label="Produits en ligne" color="text-yellow-400" started={statsVisible} />
             <StatCard icon={<FiCheckCircle size={28}/>} value={stats.totalCommandes} label="Commandes livrées" color="text-blue-400" started={statsVisible} />
           </motion.div>

@@ -5,10 +5,15 @@ import { getProduit } from '../services/produits';
 import { useCart } from '../hooks/useCart';
 import { formatPrice } from '../utils/formatPrice';
 import ReviewCard from '../components/ReviewCard';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const ProductDetail = () => {
   const { pid } = useParams();
   const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
@@ -29,6 +34,11 @@ const ProductDetail = () => {
   }, [pid]);
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error('Veuillez vous connecter pour ajouter au panier');
+      navigate('/connexion');
+      return;
+    }
     if (product) {
       addItem(product, quantity);
     }
