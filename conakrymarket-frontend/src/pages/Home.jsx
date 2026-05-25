@@ -1,26 +1,61 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiSmartphone, FiShoppingBag, FiCoffee, FiSun, FiArrowRight, FiShield, FiTruck, FiCreditCard } from 'react-icons/fi';
+import { FiSmartphone, FiShoppingBag, FiCoffee, FiSun, FiArrowRight, FiShield, FiTruck, FiCreditCard, FiUsers, FiPackage, FiCheckCircle, FiStore } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
 import { getProduits } from '../services/produits';
+import api from '../services/api';
 import { motion } from 'framer-motion';
+
+// Hook d'animation de compteur
+const useCounter = (target, duration = 1500, started = false) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!started || target === 0) return;
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { setCount(target); clearInterval(timer); }
+      else setCount(Math.floor(start));
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target, started]);
+  return count;
+};
 
 const Home = () => {
   const [topProducts, setTopProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ totalUsers: 0, totalProduits: 0, totalCommandes: 0, totalVendeurs: 0 });
+  const [statsVisible, setStatsVisible] = useState(false);
+  const statsRef = useRef(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getProduits({ limit: 8, sort: '-note_moyenne' });
-        setTopProducts(data.data || []);
+        const [productsRes, statsRes] = await Promise.all([
+          getProduits({ limit: 8, sort: '-note_moyenne' }),
+          api.get('/stats')
+        ]);
+        setTopProducts(productsRes.data || []);
+        setStats(statsRes.data);
       } catch (error) {
-        console.error("Error fetching top products", error);
+        console.error('Error fetching home data', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchData();
+  }, []);
+
+  // Observer pour déclencher l'animation des compteurs
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setStatsVisible(true); },
+      { threshold: 0.3 }
+    );
+    if (statsRef.current) observer.observe(statsRef.current);
+    return () => observer.disconnect();
   }, []);
 
   const categories = [
@@ -297,30 +332,54 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-24 bg-gray-900 text-white relative overflow-hidden">
+      <section ref={statsRef} className="py-24 bg-gray-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-gray-900 to-gray-900"></div>
+        {/* Décors animés */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-black text-white tracking-tight mb-3">ConakryMarket en chiffres</h2>
+            <p className="text-gray-400 text-lg">Des données réelles, mises à jour en temps réel</p>
+          </motion.div>
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center"
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
           >
-            {[
-              { value: '50k+', label: 'Clients', color: 'text-primary' },
-              { value: '10k+', label: 'Produits', color: 'text-secondary' },
-              { value: '100%', label: 'Guinéen', color: 'text-yellow-500' }
-            ].map((stat, i) => (
-              <motion.div key={i} variants={itemVariants}>
-                <p className={`text-5xl font-black ${stat.color} mb-2 tracking-tighter`}>{stat.value}</p>
-                <p className="text-lg text-gray-400 font-medium">{stat.label}</p>
-              </motion.div>
-            ))}
+            <StatCard icon={<FiUsers size={28}/>} value={stats.totalUsers} label="Clients actifs" color="text-primary" started={statsVisible} />
+            <StatCard icon={<FiStore size={28}/>} value={stats.totalVendeurs} label="Vendeurs" color="text-secondary" started={statsVisible} />
+            <StatCard icon={<FiPackage size={28}/>} value={stats.totalProduits} label="Produits en ligne" color="text-yellow-400" started={statsVisible} />
+            <StatCard icon={<FiCheckCircle size={28}/>} value={stats.totalCommandes} label="Commandes livrées" color="text-blue-400" started={statsVisible} />
           </motion.div>
         </div>
       </section>
     </div>
+  );
+};
+
+// Composant StatCard avec compteur animé
+const StatCard = ({ icon, value, label, color, started }) => {
+  const count = useCounter(value, 1800, started);
+  return (
+    <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+      className="flex flex-col items-center gap-3"
+    >
+      <div className={`w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center ${color} mb-1`}>
+        {icon}
+      </div>
+      <p className={`text-5xl font-black ${color} tracking-tighter`}>
+        {count.toLocaleString('fr-FR')}
+      </p>
+      <p className="text-gray-400 font-medium text-sm uppercase tracking-wide">{label}</p>
+    </motion.div>
   );
 };
 

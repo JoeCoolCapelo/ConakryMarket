@@ -12,6 +12,11 @@ const avisRoutes = require('./src/routes/avis');
 const dashboardRoutes = require('./src/routes/dashboard');
 const adminRoutes = require('./src/routes/admin');
 
+// Models pour stats publiques
+const Client = require('./src/models/Client');
+const Commande = require('./src/models/Commande');
+const Produit = require('./src/models/Produit');
+
 const app = express();
 
 const path = require('path');
@@ -32,6 +37,21 @@ app.use('/api/commandes', commandeRoutes);
 app.use('/api/avis', avisRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Route publique pour les statistiques de la home page
+app.get('/api/stats', async (req, res) => {
+  try {
+    const [totalUsers, totalProduits, totalCommandes, totalVendeurs] = await Promise.all([
+      Client.countDocuments({ role: 'client' }),
+      Produit.countDocuments({ actif: { $ne: false } }),
+      Commande.countDocuments({ statut: 'livr\u00e9' }),
+      Client.countDocuments({ role: 'vendeur' }),
+    ]);
+    res.json({ totalUsers, totalProduits, totalCommandes, totalVendeurs });
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
 
 // Error Handler
 app.use(errorHandler);
