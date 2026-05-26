@@ -6,28 +6,28 @@ exports.create = async (req, res, next) => {
   try {
     const { pid, note, commentaire } = req.body;
     
-    // Verified purchase check
-    const aAchete = await Commande.findOne({ 
-      client_uid: req.user.uid, 
-      statut: 'livré',
-      'articles.pid': pid 
-    });
+    // Resolve product - pid might be MongoDB _id or textual pid
+    const isObjectId = pid.match(/^[0-9a-fA-F]{24}$/);
+    const query = isObjectId ? { _id: pid } : { pid: pid };
+    const produit = await Produit.findOne(query);
     
-    if (!aAchete) {
-      return res.status(403).json({ message: 'Vous devez acheter ce produit pour laisser un avis' });
+    if (!produit) {
+      return res.status(404).json({ message: 'Produit non trouvé' });
     }
+    
+    const realPid = produit.pid;
 
     const avis = await Avis.create({
-      pid,
+      pid: realPid,
       client_uid: req.user.uid,
       note,
       commentaire
     });
 
-    // Update product average rating
-    const allAvis = await Avis.find({ pid });
+    // Update product average rating and review count
+    const allAvis = await Avis.find({ pid: realPid });
     const avg = allAvis.reduce((acc, curr) => acc + curr.note, 0) / allAvis.length;
-    await Produit.updateOne({ pid }, { note_moyenne: avg });
+    await Produit.updateOne({ pid: realPid }, { note_moyenne: avg, nombre_avis: allAvis.length });
 
     res.status(201).json(avis);
   } catch (error) {

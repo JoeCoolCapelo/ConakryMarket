@@ -87,7 +87,15 @@ const ProductCard = ({ product }) => {
                 {formatPrice(product.prix)}
               </span>
               <div className="flex items-center gap-1 mt-0.5">
-                <FiStar className="text-yellow-400 fill-current" size={10} />
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <FiStar 
+                      key={star} 
+                      size={10} 
+                      className={star <= Math.round(product.note_moyenne || 0) ? "text-yellow-400 fill-current" : "text-gray-300"} 
+                    />
+                  ))}
+                </div>
                 <span className="font-semibold text-gray-700 text-xs">{product.note_moyenne?.toFixed(1) || '0.0'}</span>
                 <span className="text-gray-400 text-[10px]">({product.nombre_avis || 0})</span>
               </div>

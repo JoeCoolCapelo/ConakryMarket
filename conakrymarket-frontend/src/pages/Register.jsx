@@ -42,8 +42,65 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
-      {/* ════ COLONNE GAUCHE — Visuels ════ */}
+    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+
+      {/* ══════ MOBILE HEADER ══════ */}
+      <div className="lg:hidden relative overflow-hidden" style={{ minHeight: '240px' }}>
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-green-700 to-primary"></div>
+        
+        {/* Decorative circles */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-sm"></div>
+        <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-white/5 blur-sm"></div>
+        <div className="absolute top-1/2 right-1/4 w-20 h-20 rounded-full bg-white/10"></div>
+        
+        {/* Floating mini images */}
+        <img 
+          src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=60&w=120"
+          alt="" 
+          className="absolute top-4 right-4 w-14 h-14 object-cover rounded-xl shadow-lg border-2 border-white/40 rotate-6 opacity-70"
+        />
+        <img 
+          src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&q=60&w=120"
+          alt="" 
+          className="absolute bottom-8 left-4 w-12 h-12 object-cover rounded-lg shadow-lg border-2 border-white/40 -rotate-6 opacity-60"
+        />
+        <img 
+          src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=60&w=120"
+          alt="" 
+          className="absolute top-6 left-1/4 w-10 h-10 object-cover rounded-full shadow-lg border-2 border-white/30 opacity-50"
+        />
+
+        {/* Logo + text */}
+        <div className="relative z-10 flex flex-col items-center justify-center h-full py-8 px-6 text-center">
+          <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-xl mb-3 border-2 border-white/30 bg-white">
+            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover" />
+          </div>
+          <h1 className="text-xl font-black text-white mb-1">
+            Conakry<span className="text-yellow-300">Market</span>
+          </h1>
+          <p className="text-white/80 text-xs font-medium max-w-xs">
+            Rejoignez des milliers de vendeurs et clients sur la plateforme n°1 de Guinée.
+          </p>
+          <div className="flex gap-3 mt-3">
+            {['Gratuit', 'Sécurisé', 'Livraison'].map(txt => (
+              <div key={txt} className="flex items-center gap-1 text-[10px] font-bold text-white/90 bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                <FiCheckCircle size={10} />
+                {txt}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Curved bottom */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+            <path d="M0,0 C480,60 960,60 1440,0 L1440,60 L0,60 Z" fill="white"/>
+          </svg>
+        </div>
+      </div>
+
+      {/* ══════ DESKTOP LEFT COLUMN — Photos (hidden on mobile) ══════ */}
       <div className="hidden lg:flex lg:w-[45%] relative bg-gray-50 overflow-hidden items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-primary/10"></div>
 
@@ -101,26 +158,26 @@ const Register = () => {
         </div>
       </div>
 
-      {/* ════ COLONNE DROITE — Formulaire ════ */}
-      <div className="w-full lg:w-[55%] flex items-center justify-center p-8 sm:p-10 overflow-y-auto relative">
-        <Link to="/" className="absolute top-6 right-8 text-sm font-bold text-gray-400 hover:text-primary transition-colors hidden lg:block">
+      {/* ══════ FORM COLUMN ══════ */}
+      <div className="w-full lg:w-[55%] flex items-center justify-center px-5 py-6 sm:p-10 overflow-y-auto relative">
+        <Link to="/" className="absolute top-4 right-5 sm:top-6 sm:right-8 text-sm font-bold text-gray-400 hover:text-primary transition-colors">
           Retour à l'accueil
         </Link>
 
-        <div className="max-w-lg w-full py-8">
-          <div className="mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                <FiUserPlus className="text-primary" size={26} />
+        <div className="max-w-lg w-full">
+          <div className="mb-6 lg:mb-8">
+            <div className="flex items-center gap-3 sm:gap-4 mb-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                <FiUserPlus className="text-primary" size={24} />
               </div>
               <div>
-                <h2 className="text-3xl font-black text-gray-900">Créez votre compte</h2>
-                <p className="text-gray-500 font-medium text-sm mt-0.5">Rejoignez ConakryMarket, la marketplace n°1 de Guinée.</p>
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-900">Créez votre compte</h2>
+                <p className="text-gray-500 font-medium text-xs sm:text-sm mt-0.5">Rejoignez ConakryMarket, la marketplace n°1 de Guinée.</p>
               </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
 
             {/* Sélection du rôle */}
             <div>
@@ -129,7 +186,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={() => handleRoleChange('client')}
-                  className={`p-4 rounded-2xl border-2 flex items-center gap-3 transition-all font-bold text-sm ${
+                  className={`p-3 sm:p-4 rounded-2xl border-2 flex items-center gap-2 sm:gap-3 transition-all font-bold text-sm ${
                     formData.role === 'client'
                       ? 'border-primary bg-primary/5 text-primary shadow-sm'
                       : 'border-gray-200 text-gray-500 hover:bg-gray-50'
@@ -139,14 +196,14 @@ const Register = () => {
                     <FiShoppingCart size={16} />
                   </div>
                   <div className="text-left">
-                    <p className="font-black">Client</p>
-                    <p className="text-[10px] opacity-70 font-medium">Acheter des produits</p>
+                    <p className="font-black text-xs sm:text-sm">Client</p>
+                    <p className="text-[10px] opacity-70 font-medium hidden sm:block">Acheter des produits</p>
                   </div>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleRoleChange('vendeur')}
-                  className={`p-4 rounded-2xl border-2 flex items-center gap-3 transition-all font-bold text-sm ${
+                  className={`p-3 sm:p-4 rounded-2xl border-2 flex items-center gap-2 sm:gap-3 transition-all font-bold text-sm ${
                     formData.role === 'vendeur'
                       ? 'border-secondary bg-secondary/5 text-secondary shadow-sm'
                       : 'border-gray-200 text-gray-500 hover:bg-gray-50'
@@ -156,8 +213,8 @@ const Register = () => {
                     <FiBriefcase size={16} />
                   </div>
                   <div className="text-left">
-                    <p className="font-black">Vendeur</p>
-                    <p className="text-[10px] opacity-70 font-medium">Vendre mes produits</p>
+                    <p className="font-black text-xs sm:text-sm">Vendeur</p>
+                    <p className="text-[10px] opacity-70 font-medium hidden sm:block">Vendre mes produits</p>
                   </div>
                 </button>
               </div>

@@ -1,5 +1,6 @@
 const Produit = require('../models/Produit');
 const Client = require('../models/Client');
+const Avis = require('../models/Avis');
 const { paginate } = require('../utils/pagination');
 
 exports.getAll = async (req, res, next) => {
@@ -41,6 +42,20 @@ exports.getOne = async (req, res, next) => {
         produit.vendeur = vendeur;
       }
     }
+    
+    // Récupérer les avis du produit
+    const avisList = await Avis.find({ pid: produit.pid }).sort({ date_avis: -1 });
+    
+    // Pour chaque avis, récupérer le nom du client
+    const avisWithClients = await Promise.all(avisList.map(async (avis) => {
+      const avisObj = avis.toObject();
+      const client = await Client.findOne({ uid: avis.client_uid }).select('nom');
+      avisObj.client = client || { nom: 'Utilisateur anonyme' };
+      return avisObj;
+    }));
+    
+    produit.liste_avis = avisWithClients;
+    produit.nombre_avis = avisWithClients.length;
     
     res.json(produit);
   } catch (error) {

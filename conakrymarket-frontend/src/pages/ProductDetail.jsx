@@ -169,7 +169,14 @@ const ProductDetail = () => {
 
           <div className="flex items-center gap-6 mb-6">
             <div className="flex items-center gap-1 bg-yellow-50 px-3 py-1.5 rounded-full border border-yellow-100">
-              <FiStar className="text-yellow-500 fill-current" />
+              <div className="flex gap-0.5 mr-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <FiStar 
+                    key={star} 
+                    className={star <= Math.round(product.note_moyenne || 0) ? "text-yellow-500 fill-current" : "text-yellow-200"} 
+                  />
+                ))}
+              </div>
               <span className="font-bold text-yellow-700">{product.note_moyenne?.toFixed(1) || '0.0'}</span>
               <span className="text-yellow-600 text-sm">({product.nombre_avis || 0} avis)</span>
             </div>
