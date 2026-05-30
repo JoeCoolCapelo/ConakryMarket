@@ -17,7 +17,12 @@ const clientSchema = new mongoose.Schema({
   },
   date_inscription: { type: Date, default: Date.now },
   nb_commandes_total: { type: Number, default: 0 },
-  ca_total: { type: Number, default: 0 }
+  ca_total: { type: Number, default: 0 },
+  statut_abonnement: { 
+    type: String, 
+    enum: ['actif', 'alerte', 'bloqué', 'aucun'], 
+    default: 'aucun' 
+  }
 }, { timestamps: true });
 
 clientSchema.pre('save', async function(next) {

@@ -26,6 +26,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminLogin from './pages/admin/AdminLogin';
+import AdminAbonnements from './pages/admin/AdminAbonnements';
 
 const ProtectedRoute = ({ children, roleRequired }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -77,6 +78,7 @@ const App = () => {
           <Route path="/admin/utilisateurs" element={<ProtectedRoute roleRequired="admin"><AdminUsers /></ProtectedRoute>} />
           <Route path="/admin/produits" element={<ProtectedRoute roleRequired="admin"><AdminProducts /></ProtectedRoute>} />
           <Route path="/admin/commandes" element={<ProtectedRoute roleRequired="admin"><AdminOrders /></ProtectedRoute>} />
+          <Route path="/admin/abonnements" element={<ProtectedRoute roleRequired="admin"><AdminAbonnements /></ProtectedRoute>} />
         </Routes>
         </ErrorBoundary>
       </main>

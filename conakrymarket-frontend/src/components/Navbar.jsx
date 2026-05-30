@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiShoppingBag, FiShoppingCart, FiMenu, FiX, FiUser, FiChevronDown, FiPackage, FiPieChart, FiClipboard } from 'react-icons/fi';
+import { FiShoppingBag, FiShoppingCart, FiMenu, FiX, FiUser, FiChevronDown, FiPackage, FiPieChart, FiClipboard, FiCreditCard } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../hooks/useCart';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -208,6 +208,9 @@ const Navbar = () => {
                           <Link to="/admin/commandes" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
                             <FiClipboard size={16} /> Commandes
                           </Link>
+                          <Link to="/admin/abonnements" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
+                            <FiCreditCard size={16} /> Abonnements
+                          </Link>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -326,6 +329,7 @@ const Navbar = () => {
                       <Link to="/admin/utilisateurs" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-xl">Utilisateurs</Link>
                       <Link to="/admin/produits" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-xl">Produits</Link>
                       <Link to="/admin/commandes" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-xl">Commandes</Link>
+                      <Link to="/admin/abonnements" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-xl">Abonnements</Link>
                     </div>
                   )}
                   <button onClick={logout} className="block w-full text-left px-4 py-3 mt-2 text-base font-bold text-red-600 hover:bg-red-50 rounded-xl">Déconnexion</button>
