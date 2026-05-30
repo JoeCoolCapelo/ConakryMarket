@@ -8,13 +8,14 @@ import {
   getAdminEvolutionMensuelle,
   getAdminStockCritique,
   getAdminTopVendeurs,
+  getAllAbonnements,
 } from '../../services/admin';
 import { formatPrice } from '../../utils/formatPrice';
 import { formatDate } from '../../utils/formatDate';
 import {
   FiUsers, FiBox, FiShoppingBag, FiDollarSign,
   FiTrendingUp, FiAlertTriangle, FiUserCheck, FiShoppingCart,
-  FiCheckCircle, FiClock, FiXCircle, FiArrowRight
+  FiCheckCircle, FiClock, FiXCircle, FiArrowRight, FiCreditCard
 } from 'react-icons/fi';
 import {
   Chart as ChartJS,
@@ -38,12 +39,13 @@ const AdminDashboard = () => {
   const [evolution, setEvolution] = useState([]);
   const [stockCritique, setStockCritique] = useState([]);
   const [topVendeurs, setTopVendeurs] = useState([]);
+  const [abonnements, setAbonnements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [s, cat, top, villes, evo, stock, vendeurs] = await Promise.all([
+        const [s, cat, top, villes, evo, stock, vendeurs, abos] = await Promise.all([
           getGlobalStats(),
           getAdminCACategories(),
           getAdminTopProduits(),
@@ -51,6 +53,7 @@ const AdminDashboard = () => {
           getAdminEvolutionMensuelle(),
           getAdminStockCritique(),
           getAdminTopVendeurs(),
+          getAllAbonnements({ limit: 5 })
         ]);
         setStats(s);
         setCaCategories(cat);
@@ -59,6 +62,7 @@ const AdminDashboard = () => {
         setEvolution(evo);
         setStockCritique(stock);
         setTopVendeurs(vendeurs);
+        setAbonnements(abos.slice(0, 5)); // Prendre les 5 plus récents
       } catch (err) {
         console.error('Erreur chargement dashboard admin', err);
       } finally {
@@ -401,6 +405,61 @@ const AdminDashboard = () => {
                 }`}>
                   {u.role}
                 </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Historique des Abonnements */}
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:col-span-2">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-lg font-black text-gray-900">Derniers Abonnements</h2>
+              <p className="text-xs text-gray-500 mt-0.5">Historique récent des paiements vendeurs</p>
+            </div>
+            <Link to="/admin/abonnements" className="text-purple-600 hover:text-purple-700 text-sm font-bold flex items-center gap-1">
+              Gérer tout <FiArrowRight size={14}/>
+            </Link>
+          </div>
+          <div className="space-y-3">
+            {abonnements.length === 0 && <p className="text-center text-gray-400 py-8">Aucun abonnement récent</p>}
+            {abonnements.map(abo => (
+              <div key={abo._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors gap-4">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm ${
+                    abo.statut === 'actif' ? 'bg-green-100 text-green-600' :
+                    abo.statut === 'alerte' ? 'bg-yellow-100 text-yellow-600' :
+                    abo.statut === 'bloqué' ? 'bg-red-100 text-red-600' :
+                    'bg-gray-200 text-gray-600'
+                  }`}>
+                    {abo.statut === 'actif' ? <FiCheckCircle /> :
+                     abo.statut === 'alerte' ? <FiAlertTriangle /> :
+                     abo.statut === 'bloqué' ? <FiXCircle /> :
+                     <FiClock />}
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900">{abo.vendeur?.nom || 'Vendeur inconnu'}</p>
+                    <p className="text-xs text-gray-500">{abo.vendeur?.email || '—'}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${abo.type === 'annuel' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                        {abo.type}
+                      </span>
+                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                        <FiCreditCard size={12}/> {abo.mode_paiement}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:items-end text-left sm:text-right border-t sm:border-t-0 border-gray-200 pt-3 sm:pt-0">
+                  <p className="font-black text-lg text-gray-900">{formatPrice(abo.montant)}</p>
+                  <p className="text-xs font-medium text-gray-500">Payé le {formatDate(abo.date_paiement)}</p>
+                  <p className={`text-xs mt-1 font-bold ${
+                    abo.statut === 'actif' ? 'text-green-600' :
+                    abo.statut === 'bloqué' ? 'text-red-600' : 'text-gray-500'
+                  }`}>
+                    Expire le {formatDate(abo.date_fin)}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
