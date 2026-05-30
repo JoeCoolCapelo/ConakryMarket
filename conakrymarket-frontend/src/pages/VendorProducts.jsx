@@ -23,7 +23,7 @@ const VendorProducts = () => {
 
   const fetchMyProducts = async () => {
     try {
-      const data = await getProduits({ vendeur: user._id, limit: 100 });
+      const data = await getProduits({ vendeur_uid: user.uid, limit: 100 });
       setProducts(data.data || []);
     } catch (error) {
       toast.error('Erreur lors du chargement de vos produits');

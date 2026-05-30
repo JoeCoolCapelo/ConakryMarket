@@ -16,6 +16,8 @@ import { FiDollarSign, FiShoppingBag, FiAlertTriangle, FiTrendingUp, FiSave } fr
 import { formatPrice } from '../utils/formatPrice';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
@@ -23,6 +25,8 @@ ChartJS.register(
 );
 
 const VendorDashboard = () => {
+  const { user } = useSelector((state) => state.auth);
+
   const [loading, setLoading] = useState(true);
   const [caCategories, setCaCategories] = useState([]);
   const [topProduits, setTopProduits] = useState([]);
@@ -176,6 +180,36 @@ const VendorDashboard = () => {
         initial="hidden"
         animate="show"
       >
+        {/* Banner Abonnement */}
+        {user?.statut_abonnement === 'alerte' && (
+          <motion.div variants={itemVariants} className="mb-8 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg shadow-sm">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <FiAlertTriangle className="h-5 w-5 text-yellow-400" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Attention : Votre abonnement expire bientôt !
+                </h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>
+                    Votre abonnement se termine le {new Date(user?.date_fin_abonnement).toLocaleDateString('fr-FR')}.
+                    Pensez à le renouveler pour éviter le blocage de votre compte.
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <Link 
+                    to="/vendeur/abonnement"
+                    className="text-sm font-medium text-yellow-800 hover:text-yellow-600 underline"
+                  >
+                    Renouveler maintenant
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow">

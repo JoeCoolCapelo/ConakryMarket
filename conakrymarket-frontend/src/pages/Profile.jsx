@@ -53,6 +53,20 @@ const Profile = () => {
     }
   };
 
+  const [stats, setStats] = useState({ ca: 0, commandes: 0 });
+
+  React.useEffect(() => {
+    if (isVendeur) {
+      import('../services/dashboard').then(({ getEvolutionMensuelle }) => {
+        getEvolutionMensuelle().then(evolution => {
+          const ca = evolution.reduce((sum, item) => sum + (item.ca_mensuel || 0), 0);
+          const cmd = evolution.reduce((sum, item) => sum + (item.nb_commandes || 0), 0);
+          setStats({ ca, commandes: cmd });
+        }).catch(err => console.error(err));
+      });
+    }
+  }, [isVendeur]);
+
   const formatDate = (dateString) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -144,7 +158,7 @@ const Profile = () => {
                     </div>
                     <span className="font-semibold text-sm">Commandes</span>
                   </div>
-                  <span className="font-bold text-gray-900">{user?.nb_commandes_total || 0}</span>
+                  <span className="font-bold text-gray-900">{isVendeur ? stats.commandes : (user?.nb_commandes_total || 0)}</span>
                 </div>
 
                 {isVendeur && (
@@ -155,7 +169,7 @@ const Profile = () => {
                       </div>
                       <span className="font-semibold text-sm">Chiffre d'affaires</span>
                     </div>
-                    <span className="font-bold text-gray-900">{(user?.ca_total || 0).toLocaleString()} GNF</span>
+                    <span className="font-bold text-gray-900">{stats.ca.toLocaleString()} GNF</span>
                   </div>
                 )}
               </div>

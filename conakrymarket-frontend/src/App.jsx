@@ -19,6 +19,7 @@ import VendorProducts from './pages/VendorProducts';
 import NewProduct from './pages/NewProduct';
 import EditProduct from './pages/EditProduct';
 import VendorOrders from './pages/VendorOrders';
+import VendorAbonnement from './pages/VendorAbonnement';
 import Profile from './pages/Profile';
 import OrderDetails from './pages/OrderDetails';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -28,7 +29,7 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminAbonnements from './pages/admin/AdminAbonnements';
 
-const ProtectedRoute = ({ children, roleRequired }) => {
+const ProtectedRoute = ({ children, roleRequired, bypassBlock = false }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   if (!isAuthenticated) {
@@ -37,6 +38,11 @@ const ProtectedRoute = ({ children, roleRequired }) => {
 
   if (roleRequired && user?.role !== roleRequired) {
     return <Navigate to="/" />;
+  }
+
+  // Intercepter les vendeurs bloqués, sauf s'ils sont déjà sur la page d'abonnement (bypassBlock = true)
+  if (user?.role === 'vendeur' && user?.compte_bloque && !bypassBlock) {
+    return <Navigate to="/vendeur/abonnement" />;
   }
 
   return children;
@@ -67,6 +73,7 @@ const App = () => {
 
           {/* Protected Vendor Routes */}
           <Route path="/vendeur/dashboard" element={<ProtectedRoute roleRequired="vendeur"><VendorDashboard /></ProtectedRoute>} />
+          <Route path="/vendeur/abonnement" element={<ProtectedRoute roleRequired="vendeur" bypassBlock={true}><VendorAbonnement /></ProtectedRoute>} />
           <Route path="/vendeur/produits" element={<ProtectedRoute roleRequired="vendeur"><VendorProducts /></ProtectedRoute>} />
           <Route path="/vendeur/produits/nouveau" element={<ProtectedRoute roleRequired="vendeur"><NewProduct /></ProtectedRoute>} />
           <Route path="/vendeur/produits/:pid/edit" element={<ProtectedRoute roleRequired="vendeur"><EditProduct /></ProtectedRoute>} />

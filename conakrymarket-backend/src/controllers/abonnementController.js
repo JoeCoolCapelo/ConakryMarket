@@ -5,12 +5,126 @@ const AppError = require('../utils/AppError');
 
 // Tarifs en GNF
 const TARIFS = {
-  mensuel: 150000,  // 150 000 GNF/mois
-  annuel: 1500000,  // 1 500 000 GNF/an
+  mensuel: 50000,   // 50 000 GNF/mois
+  annuel: 500000,   // 500 000 GNF/an (2 mois gratuits)
 };
 
 // Délai de grâce avant blocage (en jours)
-const DELAI_ALERTE_JOURS = 5;
+const DELAI_ALERTE_JOURS = 7;
+
+// ─── VENDEUR: Payer un abonnement (paiement artificiel instantané) ───────────
+exports.demanderAbonnement = async (req, res, next) => {
+  try {
+    const { type, mode_paiement, numero_paiement, code_marchand, note } = req.body;
+
+    if (!['mensuel', 'annuel'].includes(type)) {
+      return next(new AppError('Type invalide. Choisir mensuel ou annuel.', 400));
+    }
+    
+    const vendeur_uid = req.user.uid;
+    const montant = TARIFS[type];
+
+    // Calcul des dates d'activation immédiate
+    const date_debut = new Date();
+    const date_fin = new Date();
+    if (type === 'mensuel') {
+      date_fin.setMonth(date_fin.getMonth() + 1);
+    } else {
+      date_fin.setFullYear(date_fin.getFullYear() + 1);
+    }
+
+    const abonnement = await Abonnement.create({
+      vendeur_uid,
+      type,
+      montant,
+      statut: 'actif', // Activé immédiatement
+      mode_paiement,
+      numero_paiement, // Ex: +224 62X XX XX XX
+      code_marchand, // Code simulé de l'agence (ex: 123456)
+      date_debut,
+      date_fin,
+      note,
+    });
+
+    // Réactiver les produits du vendeur s'ils étaient bloqués
+    await Produit.updateMany({ vendeur_uid, actif: false }, { actif: true });
+
+    // Mettre à jour statut abonnement sur le vendeur
+    await Client.findOneAndUpdate({ uid: vendeur_uid }, { 
+      statut_abonnement: 'actif', 
+      compte_bloque: false,
+      date_fin_abonnement: date_fin 
+    });
+
+    res.status(201).json({ message: 'Paiement effectué avec succès. Abonnement activé !', abonnement });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ─── ADMIN: Valider une demande d'abonnement ─────────────────────────────────
+exports.validerAbonnement = async (req, res, next) => {
+  try {
+    const { id } = req.params; // ID de l'abonnement
+    const abonnement = await Abonnement.findById(id);
+    
+    if (!abonnement) return next(new AppError('Abonnement introuvable', 404));
+    if (abonnement.statut !== 'en_attente') {
+      return next(new AppError('Cet abonnement n\'est pas en attente', 400));
+    }
+
+    const date_debut = new Date();
+    const date_fin = new Date();
+    if (abonnement.type === 'mensuel') {
+      date_fin.setMonth(date_fin.getMonth() + 1);
+    } else {
+      date_fin.setFullYear(date_fin.getFullYear() + 1);
+    }
+
+    abonnement.statut = 'actif';
+    abonnement.date_debut = date_debut;
+    abonnement.date_fin = date_fin;
+    abonnement.enregistre_par = req.user.uid;
+    await abonnement.save();
+
+    // Réactiver les produits du vendeur s'ils étaient bloqués
+    await Produit.updateMany({ vendeur_uid: abonnement.vendeur_uid, actif: false }, { actif: true });
+
+    // Mettre à jour statut abonnement sur le vendeur
+    await Client.findOneAndUpdate({ uid: abonnement.vendeur_uid }, { 
+      statut_abonnement: 'actif', 
+      compte_bloque: false,
+      date_fin_abonnement: date_fin 
+    });
+
+    res.json({ message: 'Abonnement validé avec succès', abonnement });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ─── ADMIN: Refuser une demande d'abonnement ─────────────────────────────────
+exports.refuserAbonnement = async (req, res, next) => {
+  try {
+    const { id } = req.params; // ID de l'abonnement
+    const { note } = req.body; // Raison du refus
+    const abonnement = await Abonnement.findById(id);
+    
+    if (!abonnement) return next(new AppError('Abonnement introuvable', 404));
+    if (abonnement.statut !== 'en_attente') {
+      return next(new AppError('Cet abonnement n\'est pas en attente', 400));
+    }
+
+    abonnement.statut = 'refusé';
+    abonnement.enregistre_par = req.user.uid;
+    if (note) abonnement.note = note;
+    await abonnement.save();
+
+    res.json({ message: 'Abonnement refusé', abonnement });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // ─── ADMIN: Créer/Enregistrer un paiement d'abonnement ───────────────────────
 exports.enregistrerPaiement = async (req, res, next) => {
@@ -49,7 +163,11 @@ exports.enregistrerPaiement = async (req, res, next) => {
     await Produit.updateMany({ vendeur_uid, actif: false }, { actif: true });
 
     // Mettre à jour statut abonnement sur le vendeur
-    await Client.findOneAndUpdate({ uid: vendeur_uid }, { statut_abonnement: 'actif' });
+    await Client.findOneAndUpdate({ uid: vendeur_uid }, { 
+      statut_abonnement: 'actif', 
+      compte_bloque: false,
+      date_fin_abonnement: date_fin 
+    });
 
     res.status(201).json({ message: 'Paiement enregistré avec succès', abonnement });
   } catch (error) {
@@ -165,6 +283,24 @@ exports.bloquerVendeur = async (req, res, next) => {
   }
 };
 
+// ─── ADMIN: Débloquer manuellement un vendeur ─────────────────────────────────
+exports.debloquerVendeur = async (req, res, next) => {
+  try {
+    const { vendeur_uid } = req.params;
+    const vendeur = await Client.findOne({ uid: vendeur_uid, role: 'vendeur' });
+    if (!vendeur) return next(new AppError('Vendeur introuvable', 404));
+
+    // Réactiver les produits du vendeur
+    await Produit.updateMany({ vendeur_uid }, { actif: true });
+    // Remettre le statut à expiré (il devra renouveler pour être actif)
+    await Client.findOneAndUpdate({ uid: vendeur_uid }, { statut_abonnement: 'expiré', compte_bloque: false });
+    
+    res.json({ message: 'Vendeur débloqué avec succès. Il doit renouveler son abonnement.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ─── CRON: Vérification automatique des abonnements ──────────────────────────
 exports.verifierAbonnements = async () => {
   try {
@@ -191,7 +327,11 @@ exports.verifierAbonnements = async () => {
     for (const abo of aBlocker) {
       await Abonnement.findByIdAndUpdate(abo._id, { statut: 'bloqué' });
       await Produit.updateMany({ vendeur_uid: abo.vendeur_uid }, { actif: false });
-      await Client.findOneAndUpdate({ uid: abo.vendeur_uid }, { statut_abonnement: 'bloqué' });
+      await Client.findOneAndUpdate({ uid: abo.vendeur_uid }, { 
+        statut_abonnement: 'bloqué', 
+        compte_bloque: true,
+        date_fin_abonnement: abo.date_fin 
+      });
       console.log(`[ABONNEMENT] Vendeur ${abo.vendeur_uid} bloqué (abonnement expiré)`);
     }
 

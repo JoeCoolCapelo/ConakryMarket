@@ -10,13 +10,20 @@ const abonnementSchema = new mongoose.Schema({
   montant: { type: Number, required: true }, // en GNF
   statut: { 
     type: String, 
-    enum: ['actif', 'alerte', 'expiré', 'bloqué'], 
-    default: 'actif' 
+    enum: ['en_attente', 'actif', 'alerte', 'expiré', 'bloqué', 'refusé'], 
+    default: 'en_attente' 
   },
-  date_debut: { type: Date, required: true },
-  date_fin: { type: Date, required: true },
+  mode_paiement: { 
+    type: String, 
+    enum: ['Orange Money', 'Mobile Money', 'Espèces', 'Carte', 'Virement', 'Autre']
+  },
+  code_marchand: { type: String }, // Code marchand simulé (ex: 123456)
+  numero_paiement: { type: String }, // Numéro de téléphone pour OM, ou autre réf
+  preuve_paiement: { type: String }, // URL Cloudinary (optionnel si on veut garder la possibilité)
+  date_debut: { type: Date },
+  date_fin: { type: Date },
   date_paiement: { type: Date, default: Date.now },
-  enregistre_par: { type: String }, // uid admin
+  enregistre_par: { type: String }, // uid admin qui a validé
   note: { type: String },
 }, { timestamps: true });
 

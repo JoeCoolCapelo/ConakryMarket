@@ -13,6 +13,7 @@ const dashboardRoutes = require('./src/routes/dashboard');
 const adminRoutes = require('./src/routes/admin');
 const abonnementRoutes = require('./src/routes/abonnements');
 const { verifierAbonnements } = require('./src/controllers/abonnementController');
+const cron = require('node-cron');
 
 // Models pour stats publiques
 const Client = require('./src/models/Client');
@@ -41,9 +42,12 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/abonnements', abonnementRoutes);
 
-// ─── CRON: Vérification abonnements toutes les 24h ───────────────────────────
+// ─── CRON: Vérification abonnements toutes les heures ───────────────────────────
 verifierAbonnements(); // Au démarrage
-setInterval(verifierAbonnements, 24 * 60 * 60 * 1000); // Toutes les 24h
+cron.schedule('0 * * * *', () => {
+  console.log('[CRON] Vérification des abonnements...');
+  verifierAbonnements();
+});
 
 // Route publique pour les statistiques de la home page
 app.get('/api/stats', async (req, res) => {

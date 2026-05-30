@@ -18,11 +18,14 @@ const clientSchema = new mongoose.Schema({
   date_inscription: { type: Date, default: Date.now },
   nb_commandes_total: { type: Number, default: 0 },
   ca_total: { type: Number, default: 0 },
+  // Champs abonnement vendeur
   statut_abonnement: { 
     type: String, 
-    enum: ['actif', 'alerte', 'bloqué', 'aucun'], 
+    enum: ['actif', 'alerte', 'expiré', 'bloqué', 'aucun'], 
     default: 'aucun' 
-  }
+  },
+  date_fin_abonnement: { type: Date },
+  compte_bloque: { type: Boolean, default: false }
 }, { timestamps: true });
 
 clientSchema.pre('save', async function(next) {
