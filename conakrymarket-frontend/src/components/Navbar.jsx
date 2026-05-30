@@ -172,6 +172,9 @@ const Navbar = () => {
                           <Link to="/vendeur/commandes" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors">
                             <FiClipboard size={16} /> Commandes Clients
                           </Link>
+                          <Link to="/vendeur/abonnement" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors">
+                            <FiCreditCard size={16} /> Abonnement & Facturation
+                          </Link>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -320,6 +323,7 @@ const Navbar = () => {
                     <>
                       <Link to="/vendeur/produits" className="flex items-center gap-2 px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-xl"><FiPackage size={18} /> Mes Produits</Link>
                       <Link to="/vendeur/dashboard" className="flex items-center gap-2 px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-xl"><FiPieChart size={18} /> Dashboard Vendeur</Link>
+                      <Link to="/vendeur/abonnement" className="flex items-center gap-2 px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-xl"><FiCreditCard size={18} /> Abonnement</Link>
                     </>
                   )}
                   {isAdmin && (
